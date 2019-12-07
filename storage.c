@@ -50,8 +50,12 @@ static void printStorageInside(int x, int y) {
 //set all the member variable as an initial value
 //and allocate memory to the context pointer
 //int x, int y : cell coordinate to be initialized
-static void initStorage(int x, int y) {
-	
+static void initStorage(int x, int y) 
+{
+	int deliverySystem[x][y].building = NULL;
+	int deliverySystem[x][y].room = NULL;
+	char deliverySystem[x][y].context = NULL;
+	char deliverySystem[x][y].passwd = NULL;   //how to make that be simplier?
 }
 
 //get password input and check if it is correct for the cell (x,y)
@@ -239,10 +243,7 @@ int str_extractStorage(int x, int y)
 	//check the matching of a password
 	if (inputpassword == deliverySystem[x][y].passwd) 
 	{
-		int deliverySystem[x][y].building = NULL;
-		int deliverySystem[x][y].room = NULL;
-		char deliverySystem[x][y].context = NULL;
-		char deliverySystem[x][y].passwd = NULL;   //how to make that be simplier?
+		initStorage(int x, int y);
 		printf(" -----------> extracting the storage (%d, %d)... \n", &x, &y);
 		return 0;
 	}
