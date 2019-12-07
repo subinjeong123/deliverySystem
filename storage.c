@@ -209,8 +209,23 @@ int str_pushToStorage(int x, int y, int nBuilding, int nRoom, char msg[MAX_MSG_S
 //after password checking, then put the msg string on the screen and re-initialize the storage
 //int x, int y : coordinate of the cell to extract
 //return : 0 - successfully extracted, -1 = failed to extract
-int str_extractStorage(int x, int y) {
-	
+int str_extractStorage(int x, int y) 
+{
+	//input the password of corresponding locker
+	printf(" - input password for (1, 0) storage : \n")
+	char inputpassword;
+	scanf("%s", &inputpassword);
+	//check the matching of a password
+	if (inputpassword == deliverySystem[x][y].passwd) 
+	{
+		int deliverySystem[x][y].building = NULL;
+		int deliverySystem[x][y].room = NULL;
+		char deliverySystem[x][y].context = NULL;
+		char deliverySystem[x][y].passwd = NULL;   //how to make that be simplier?
+		printf(" -----------> extracting the storage (%d, %d)... \n", &x, &y);
+		return 0;
+	}
+	return -1;
 }
 
 //find my package from the storage
