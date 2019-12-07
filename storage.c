@@ -61,8 +61,18 @@ static void initStorage(int x, int y)
 //get password input and check if it is correct for the cell (x,y)
 //int x, int y : cell for password check
 //return : 0 - password is matching, -1 - password is not matching
-static int inputPasswd(int x, int y) {
-	
+static int inputPasswd(int x, int y) 
+{
+	//input the password of corresponding locker
+	printf(" - input password for (%d, %d) storage : \n", x, y);
+	char inputpassword;
+	scanf("%s", &inputpassword);
+	//check the matching of a password
+	if (inputpassword == deliverySystem[x][y].passwd) 
+	{
+		return 0;
+	}
+	return -1;
 }
 
 
@@ -236,15 +246,10 @@ int str_pushToStorage(int x, int y, int nBuilding, int nRoom, char msg[MAX_MSG_S
 //return : 0 - successfully extracted, -1 = failed to extract
 int str_extractStorage(int x, int y) 
 {
-	//input the password of corresponding locker
-	printf(" - input password for (1, 0) storage : \n")
-	char inputpassword;
-	scanf("%s", &inputpassword);
-	//check the matching of a password
-	if (inputpassword == deliverySystem[x][y].passwd) 
+	if (inputPasswd(int x, int y) == 0) 
 	{
 		initStorage(int x, int y);
-		printf(" -----------> extracting the storage (%d, %d)... \n", &x, &y);
+		printf(" -----------> extracting the storage (%d, %d)... \n", x, y);
 		return 0;
 	}
 	return -1;
