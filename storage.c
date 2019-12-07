@@ -187,8 +187,20 @@ int str_checkStorage(int x, int y) {
 //char msg[] : package context (message string)
 //char passwd[] : password string (4 characters)
 //return : 0 - successfully put the package, -1 - failed to put
-int str_pushToStorage(int x, int y, int nBuilding, int nRoom, char msg[MAX_MSG_SIZE+1], char passwd[PASSWD_LEN+1]) {
-	
+int str_pushToStorage(int x, int y, int nBuilding, int nRoom, char msg[MAX_MSG_SIZE+1], char passwd[PASSWD_LEN+1]) 
+{
+	//store the information
+	int deliverySystem[x][y].building = nBuilding;
+	int deliverySystem[x][y].room = nRoom;
+	deliverySystem[x][y].context = (char *)malloc(100 * sizeof(char));
+	char deliverySystem[x][y].context = msg[MAX_MSG_SIZE+1];
+	char deliverySystem[x][y].passwd = passwd[PASSWD_LEN+1];   //why isn't passwd array?
+	//check the success of storing corresponding deliverySystem
+	if(deliverySystem[x][y].building == NULL||deliverySystem[x][y].room == NULL||deliverySystem[x][y].context == NULL||deliverySystem[x][y].passwd == NULL)
+	{
+		return -1;
+	}
+	return 0;	
 }
 
 
