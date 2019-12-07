@@ -143,8 +143,11 @@ int str_createSystem(char* filepath)
 }
 
 //free the memory of the deliverySystem 
-void str_freeSystem(void) {
-	
+void str_freeSystem(void) 
+{
+	free(deliverySystem);
+	//deliverySystem is declared **, how to free system?
+	//What is the difference between systemSize which is used and deliverySystem which is not used?
 }
 
 
