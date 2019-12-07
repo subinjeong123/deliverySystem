@@ -232,7 +232,24 @@ int str_extractStorage(int x, int y)
 //print all the cells (x,y) which has my package
 //int nBuilding, int nRoom : my building/room numbers
 //return : number of packages that the storage system has
-int str_findStorage(int nBuilding, int nRoom) {
+int str_findStorage(int nBuilding, int nRoom) 
+{
+	//designate a variable indicating the number of parcels delivered
+	int cnt=0;
+	//find the package with the buiding and the room number
+	int i, j;
+	for (i=0;i<systemSize[0];i++)
+	{
+		for (j=0;j<systemSize[1];j++)
+		{
+			if (deliverySystem[i][j].building == nBuilding && deliverySystem[i][j].room == nRoom)
+			{
+				printtf(" -----------> Found a package in (i, j) \n");
+				cnt++;
+			}
+		}
+	}
 	return cnt;
 }
+
 
