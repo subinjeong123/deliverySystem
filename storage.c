@@ -70,8 +70,26 @@ static int inputPasswd(int x, int y) {
 //backup the delivery system context to the file system
 //char* filepath : filepath and name to write
 //return : 0 - backup was successfully done, -1 - failed to backup
-int str_backupSystem(char* filepath) {
+int str_backupSystem(char* filepath) 
+{
+	FILE *fp;   //how to declare fp?
+	//open the pile
+	fp=fopen(filepath, "w");
+	fprintf(fp, "%d %d\n", systemSize[0], systemSize[1]);
+	fprintf(fp, "%s\n", masterPassword);
+	int i, j;
+	for (i=0;i<systemSize[0];i++)
+	{
+		for (j=0;j<systemSize[1];j++)
+		{
+			if (deliverySystem[i][j].context != NULL)
+			{
+				fprintf(fp, "%d %d %d %d %s %s\n", i, j, deliverySystem[i][j].building, deliverySystem[i][j].room, deliverySystem[i][j].passwd, deliverySystem[i][j].context);
+			}
+		}
+	}
 	
+	//how to check the file is successfully stored?
 }
 
 
