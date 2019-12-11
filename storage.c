@@ -52,7 +52,7 @@ static void printStorageInside(int x, int y) {
 //int x, int y : cell coordinate to be initialized
 static void initStorage(int x, int y) 
 {
-
+	
 }
 
 //get password input and check if it is correct for the cell (x,y)
@@ -74,24 +74,33 @@ static int inputPasswd(int x, int y)
 //return : 0 - backup was successfully done, -1 - failed to backup
 int str_backupSystem(char* filepath) 
 {
-	FILE *fp;   //how to declare fp?
 	//open the pile
+	FILE *fp;  
 	fp=fopen(filepath, "w");
+	//backup the file of the locker's systemSize(row, collumn) and masterPassword
 	fprintf(fp, "%d %d\n", systemSize[0], systemSize[1]);
 	fprintf(fp, "%s\n", masterPassword);
+	//backup the corresponding row, column, building, room, password, context which storedCnt is 1
 	int i, j;
 	for (i=0;i<systemSize[0];i++)
 	{
 		for (j=0;j<systemSize[1];j++)
 		{
-			if (deliverySystem[i][j].context != NULL)
+			if (deliverySystem[i][j].cnt== 1)
 			{
 				fprintf(fp, "%d %d %d %d %s %s\n", i, j, deliverySystem[i][j].building, deliverySystem[i][j].room, deliverySystem[i][j].passwd, deliverySystem[i][j].context);
 			}
 		}
 	}
+	//close the file
+	fclose(fp);
+	//check opening is successful
+	if (fp == NULL)
+	{
+		return -1;
+	}
 	
-	//how to check the file is successfully stored?
+	return 0;
 }
 
 
@@ -106,9 +115,8 @@ int str_createSystem(char* filepath)
 	char c;
 	//apply corresponding row and column
 	int inputrow, inputcolumn;
-	//make file NULL
-	FILE *fp;   
 	//open the pile
+	FILE *fp;   
 	fp=fopen(filepath, "r");
 	//declare the locker's systemSize(row, collumn) and masterPassword
 	fscanf(fp, "%d %d", &systemSize[0], &systemSize[1]);
@@ -125,13 +133,13 @@ int str_createSystem(char* filepath)
 		for(j=0;j<systemSize[1];j++)
 			deliverySystem[i][j].context = (char *)malloc(100 * sizeof(char));
 	}
-	//allocate cnt
+	//allocate existence status(cnt) with 0
 	for(i=0;i<systemSize[0];i++)
 	{
 		for(j=0;j<systemSize[1];j++)
 			deliverySystem[i][j].cnt=0;
 	}	
-	//declare corresponding row, column, building, room, password, context with adding storedCnt
+	//declare corresponding row, column, building, room, password, context, existence status(cnt) with adding storedCnt
 	while((c=fgetc(fp))!=EOF)
 	{
 		fscanf(fp, "%d %d", &inputrow, &inputcolumn);
@@ -154,7 +162,21 @@ int str_createSystem(char* filepath)
 //free the memory of the deliverySystem 
 void str_freeSystem(void) 
 {
-	
+	int i, j;
+	//free message(context)
+	for(i=0;i<systemSize[0];i++)
+	{
+		for(j=0;j<systemSize[1];j++)
+			free(deliverySystem[i][j].context);
+	}
+	//allocate the locker's systemSize(row, collumn)
+	free(deliverySystem);
+	for(i=0;i<systemSize[0];i++)
+	{
+		free(deliverySystem[i]);
+	}
+	//deliverySystem is declared **, how to free system?
+	//What is the difference between systemSize which is used and deliverySystem which is not used?
 }
 
 
@@ -217,7 +239,27 @@ int str_checkStorage(int x, int y) {
 //return : 0 - successfully put the package, -1 - failed to put
 int str_pushToStorage(int x, int y, int nBuilding, int nRoom, char msg[MAX_MSG_SIZE+1], char passwd[PASSWD_LEN+1]) 
 {
+	int i;
+	//check the success of storing corresponding deliverySystem
+	if(deliverySystem[x][y].cnt==0)
+	{
+		//store the information of building, room, message(context), and passwd with adding cnt and storedCnt
+		deliverySystem[x][y].building = nBuilding;
+		deliverySystem[x][y].room = nRoom;
+		deliverySystem[x][y].context = msg;
+		for(i=0; i<PASSWD_LEN+1; i++)
+		{
+			deliverySystem[x][y].passwd[i] = passwd[i];
+		}
+		deliverySystem[x][y].cnt++;
+		storedCnt++;
+		return 0;
+	}
+	else
+		return -1;	
 		
+	return 0;	
+
 }
 
 
@@ -228,7 +270,7 @@ int str_pushToStorage(int x, int y, int nBuilding, int nRoom, char msg[MAX_MSG_S
 //return : 0 - successfully extracted, -1 = failed to extract
 int str_extractStorage(int x, int y) 
 {
-	
+
 }
 
 //find my package from the storage
@@ -237,7 +279,6 @@ int str_extractStorage(int x, int y)
 //return : number of packages that the storage system has
 int str_findStorage(int nBuilding, int nRoom) 
 {
-	
+	int cnt;
+	return cnt;
 }
-
-
