@@ -52,7 +52,17 @@ static void printStorageInside(int x, int y) {
 //int x, int y : cell coordinate to be initialized
 static void initStorage(int x, int y) 
 {
-	
+	//initialize the information of building, room, context, passwd, and cnt
+	int i;
+	deliverySystem[x][y].building = 0;
+	deliverySystem[x][y].room = 0;
+	deliverySystem[x][y].context = 0;
+	for(i=0; i<PASSWD_LEN+1; i++)
+	{
+			deliverySystem[x][y].passwd[i] = 0;
+	}
+	deliverySystem[x][y].cnt = 0;
+	storedCnt--;
 }
 
 //get password input and check if it is correct for the cell (x,y)
@@ -60,7 +70,17 @@ static void initStorage(int x, int y)
 //return : 0 - password is matching, -1 - password is not matching
 static int inputPasswd(int x, int y) 
 {
-	
+	//print location of locker to be entered for password
+	printf(" - input password for (%d, %d) storage : \n", x, y);
+	//input the password of corresponding locker
+	char inputpasswd[PASSWD_LEN+1];
+	scanf("%s", inputpasswd);
+	//check the matching of a password
+	if (strcmp(inputpasswd, deliverySystem[x][y].passwd) == 0 || strcmp(inputpasswd, masterPassword) == 0 ) 
+	{
+		return 0;
+	}
+	return -1;
 }
 
 
@@ -270,7 +290,22 @@ int str_pushToStorage(int x, int y, int nBuilding, int nRoom, char msg[MAX_MSG_S
 //return : 0 - successfully extracted, -1 = failed to extract
 int str_extractStorage(int x, int y) 
 {
-
+	//if password is correct, extract the storage
+	if(inputPasswd(x, y) == 0)
+	{
+		printf(" -----------> extracting the storage (%d, %d)... \n\n", x, y);
+		printf("------------------------------------------------------------------------\n");
+		printf("------------------------------------------------------------------------\n");
+		printf("<<<<<<<<<<<<<<<<<<<<<<<< : %s >>>>>>>>>>>>>>>>>>>>>>>>>>>>\n", deliverySystem[x][y].context);
+		printf("------------------------------------------------------------------------\n");
+		printf("------------------------------------------------------------------------\n");
+		initStorage(x, y);
+		return 0;
+	}
+	else
+	//if password is not correct, make fail extracting
+	printf(" -----------> password is wrong!!\n");
+	return -1;
 }
 
 //find my package from the storage
@@ -279,6 +314,20 @@ int str_extractStorage(int x, int y)
 //return : number of packages that the storage system has
 int str_findStorage(int nBuilding, int nRoom) 
 {
-	int cnt;
+	//designate a variable indicating the number of parcels delivered
+	int cnt=0;
+	//find the package with the buiding and the room number
+	int i, j;
+	for (i=0;i<systemSize[0];i++)
+	{
+		for (j=0;j<systemSize[1];j++)
+		{
+			if (deliverySystem[i][j].building == nBuilding && deliverySystem[i][j].room == nRoom)
+			{
+				printf(" -----------> Found a package in (%d, %d) \n", i, j);
+				cnt++;
+			}
+		}
+	}
 	return cnt;
 }
