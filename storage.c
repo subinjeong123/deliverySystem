@@ -52,10 +52,7 @@ static void printStorageInside(int x, int y) {
 //int x, int y : cell coordinate to be initialized
 static void initStorage(int x, int y) 
 {
-	int deliverySystem[x][y].building = NULL;
-	int deliverySystem[x][y].room = NULL;
-	char deliverySystem[x][y].context = NULL;
-	char deliverySystem[x][y].passwd = NULL;   //how to make that be simplier?
+
 }
 
 //get password input and check if it is correct for the cell (x,y)
@@ -63,16 +60,7 @@ static void initStorage(int x, int y)
 //return : 0 - password is matching, -1 - password is not matching
 static int inputPasswd(int x, int y) 
 {
-	//input the password of corresponding locker
-	printf(" - input password for (%d, %d) storage : \n", x, y);
-	char inputpassword;
-	scanf("%s", &inputpassword);
-	//check the matching of a password
-	if (inputpassword == deliverySystem[x][y].passwd) 
-	{
-		return 0;
-	}
-	return -1;
+	
 }
 
 
@@ -113,39 +101,45 @@ int str_backupSystem(char* filepath)
 //return : 0 - successfully created, -1 - failed to create the system
 int str_createSystem(char* filepath) 
 {
-	//make file NULL
-	FILE *fp = NULL;
-	//open the pile
-	fp=fopen(filepath, "r");
-	char c;
 	//insert variables to help repeat
 	int i, j;
-	//declare the locker's systemSize(row, collumn) and masterPassword
-	fscanf(fp, "%d %d\n", &systemSize[0], &systemSize[1]);
-	fscanf(fp, "%s\n", &masterPassword);
-	//allocate the locker's systemSize(row, collumn)
-	deliverySystem = (struct storage_t**)malloc(systemSize[0]*sizeof(storage_t*));
-	for(i=0;i<systemSize[0];i++)
-	{
-		deliverySystem[i]= (struct storage_t**)malloc(systemSize[1]*sizeof(storage_t));
-	}
-	
+	char c;
 	//apply corresponding row and column
 	int inputrow, inputcolumn;
+	//make file NULL
+	FILE *fp;   
+	//open the pile
+	fp=fopen(filepath, "r");
+	//declare the locker's systemSize(row, collumn) and masterPassword
+	fscanf(fp, "%d %d", &systemSize[0], &systemSize[1]);
+	fscanf(fp, "%s", &masterPassword);
+	//allocate the locker's systemSize(row, collumn)
+	deliverySystem = (storage_t**)malloc(systemSize[0]*sizeof(storage_t*));
+	for(i=0;i<systemSize[0];i++)
+	{
+		deliverySystem[i]= (storage_t*)malloc(systemSize[1]*sizeof(storage_t));
+	}
 	//allocate message(context)
 	for(i=0;i<systemSize[0];i++)
-		{
-			for(j=0;j<systemSize[1];j++)
+	{
+		for(j=0;j<systemSize[1];j++)
 			deliverySystem[i][j].context = (char *)malloc(100 * sizeof(char));
-		}
-	//declare corresponding row, column, building, room, password, context	
+	}
+	//allocate cnt
+	for(i=0;i<systemSize[0];i++)
+	{
+		for(j=0;j<systemSize[1];j++)
+			deliverySystem[i][j].cnt=0;
+	}	
+	//declare corresponding row, column, building, room, password, context with adding storedCnt
 	while((c=fgetc(fp))!=EOF)
 	{
-		
-		fscanf(fp, "%d %d %d %d %s %s", &inputrow, &inputcolumn, &deliverySystem[inputrow][inputcolumn].building, &deliverySystem[inputrow][inputcolumn].room, deliverySystem[inputrow][inputcolumn].passwd, deliverySystem[i][j].context);
+		fscanf(fp, "%d %d", &inputrow, &inputcolumn);
+		fscanf(fp, "%d %d %s %s", &deliverySystem[inputrow][inputcolumn].building, &deliverySystem[inputrow][inputcolumn].room, deliverySystem[inputrow][inputcolumn].passwd, deliverySystem[inputrow][inputcolumn].context);
+		deliverySystem[inputrow][inputcolumn].cnt=1;
+		storedCnt++;
 	}
-	//print the information
-	printf("%d %d %s %d %d %d %d %s %s", systemSize[0], systemSize[1], masterPassword[PASSWD_LEN+1], inputrow, inputcolumn, deliverySystem[inputrow][inputcolumn].building, deliverySystem[inputrow][inputcolumn].room, deliverySystem[inputrow][inputcolumn].passwd[PASSWD_LEN+1], deliverySystem[inputrow][inputcolumn].context);
+	
 	//close the file
 	fclose(fp);
 	//check opening is successful
@@ -153,15 +147,14 @@ int str_createSystem(char* filepath)
 	{
 		return -1;
 	}
+	
 	return 0;
 }
 
 //free the memory of the deliverySystem 
 void str_freeSystem(void) 
 {
-	free(deliverySystem);
-	//deliverySystem is declared **, how to free system?
-	//What is the difference between systemSize which is used and deliverySystem which is not used?
+	
 }
 
 
@@ -224,18 +217,7 @@ int str_checkStorage(int x, int y) {
 //return : 0 - successfully put the package, -1 - failed to put
 int str_pushToStorage(int x, int y, int nBuilding, int nRoom, char msg[MAX_MSG_SIZE+1], char passwd[PASSWD_LEN+1]) 
 {
-	//store the information
-	int deliverySystem[x][y].building = nBuilding;
-	int deliverySystem[x][y].room = nRoom;
-	deliverySystem[x][y].context = (char *)malloc(100 * sizeof(char));
-	char deliverySystem[x][y].context = msg[MAX_MSG_SIZE+1];
-	char deliverySystem[x][y].passwd = passwd[PASSWD_LEN+1];   //why isn't passwd array?
-	//check the success of storing corresponding deliverySystem
-	if(deliverySystem[x][y].building == NULL||deliverySystem[x][y].room == NULL||deliverySystem[x][y].context == NULL||deliverySystem[x][y].passwd == NULL)
-	{
-		return -1;
-	}
-	return 0;	
+		
 }
 
 
@@ -246,13 +228,7 @@ int str_pushToStorage(int x, int y, int nBuilding, int nRoom, char msg[MAX_MSG_S
 //return : 0 - successfully extracted, -1 = failed to extract
 int str_extractStorage(int x, int y) 
 {
-	if (inputPasswd(int x, int y) == 0) 
-	{
-		initStorage(int x, int y);
-		printf(" -----------> extracting the storage (%d, %d)... \n", x, y);
-		return 0;
-	}
-	return -1;
+	
 }
 
 //find my package from the storage
@@ -261,22 +237,7 @@ int str_extractStorage(int x, int y)
 //return : number of packages that the storage system has
 int str_findStorage(int nBuilding, int nRoom) 
 {
-	//designate a variable indicating the number of parcels delivered
-	int cnt=0;
-	//find the package with the buiding and the room number
-	int i, j;
-	for (i=0;i<systemSize[0];i++)
-	{
-		for (j=0;j<systemSize[1];j++)
-		{
-			if (deliverySystem[i][j].building == nBuilding && deliverySystem[i][j].room == nRoom)
-			{
-				printtf(" -----------> Found a package in (i, j) \n");
-				cnt++;
-			}
-		}
-	}
-	return cnt;
+	
 }
 
 
